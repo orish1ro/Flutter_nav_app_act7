@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'demo_auth.dart';
+import 'dashboard_page.dart';
 import 'calculator_screen.dart';
 import 'profile_page.dart';
-import 'social_media_page.dart';
+import 'social_media/social_media.dart';
 
-// MainScreen holds the bottom navigation bar and shows the selected page.
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -13,42 +13,43 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  // Which tab is selected: 0 = Home, 1 = Calculator, 2 = Profile, 3 = Social Media
   int selectedIndex = 0;
 
-  // The four pages, in the same order as the tabs.
-  // (No "const" on the list itself, so it works even if a page is not const.)
-  final List<Widget> pages = [
-    const HomePage(),
-    const CalculatorScreen(),
-    const ProfilePage(),
-    const SocialMediaPage(),
-  ];
+  late final List<Widget> pages;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final username = DemoAuth.currentUsername!;
+
+    pages = [
+      DashboardPage(username: username),
+      const CalculatorScreen(),
+      SocialMediaPage(username: username),
+      ProfilePage(username: username),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // IndexedStack keeps ALL pages alive and only shows the selected one.
-      // That is why the calculator keeps its numbers when you switch tabs.
       body: IndexedStack(
         index: selectedIndex,
         children: pages,
       ),
-
-      // The bottom bar with four buttons.
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
         onDestinationSelected: (int index) {
-          // setState() redraws the screen with the newly selected page.
           setState(() {
             selectedIndex = index;
           });
         },
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.dashboard_outlined),
+            selectedIcon: Icon(Icons.dashboard),
+            label: 'Dashboard',
           ),
           NavigationDestination(
             icon: Icon(Icons.calculate_outlined),
@@ -56,14 +57,14 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Calculator',
           ),
           NavigationDestination(
+            icon: Icon(Icons.people_outline),
+            selectedIcon: Icon(Icons.people),
+            label: 'Social',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
             label: 'Profile',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.share_outlined),
-            selectedIcon: Icon(Icons.share),
-            label: 'Social Media',
           ),
         ],
       ),
